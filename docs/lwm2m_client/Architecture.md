@@ -2,7 +2,7 @@
 
 ## Design Principles
 
-1. **No hidden allocations** — all memory comes from arenas, never from hidden malloc calls
+1. **No hidden allocations** — all memory goes through the pluggable allocator, never direct malloc calls
 2. **Backend agnostic** — core library has zero knowledge of libcoap, mbedTLS, or any platform
 3. **Compile-time version selection** — LWM2M version features are gated by preprocessor macros
 4. **Minimal surface** — the public API should be small and obvious
@@ -51,14 +51,14 @@
 
 ## Key Types
 
-### `lwm2m_context_t`
-The main client context. Holds the object tree, registration state, and references to PAL implementations. One per client instance.
+### `lwm2mcc_context_t`
+The main client context (opaque). Holds the allocator and object store. One per client instance. Access internals via `lwm2mcc_allocator()` and `lwm2mcc_objects()`.
 
-### `lwm2m_object_t`
-Represents an LWM2M object (e.g., Device /3). Contains a linked list of instances and callbacks for CRUD operations.
+### `lwm2mcc_object_def_t`
+Static description of an LWM2M object (e.g., Device /3). Holds oid, name, resource definitions, and read/write/execute callbacks. User-owned, must outlive the registration. Callbacks are per-object — the oiid parameter distinguishes instances.
 
-### `lwm2m_arena_t`
-A memory arena. See [[Memory Management]].
+### `lwm2mcc_allocator_t`
+Pluggable allocator. See [[Memory Management]].
 
 ## Threading Model
 The library is single-threaded. The user drives it by calling `lwm2m_step()` in a loop (or from a select/poll/epoll event loop). The library never creates threads.

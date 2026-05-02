@@ -25,4 +25,20 @@ lwm2mcc_context_t *lwm2mcc_create(const lwm2mcc_allocator_t *allocator);
  */
 void lwm2mcc_destroy(lwm2mcc_context_t *ctx);
 
+/**
+ * @brief Get the allocator from a context
+ * @param ctx Client context
+ * @return Pointer to the context's allocator
+ */
+const lwm2mcc_allocator_t *lwm2mcc_allocator(const lwm2mcc_context_t *ctx);
+
+typedef struct sorted_array sorted_array_t;
+
+/**
+ * @brief Get the object store from a context
+ * @param ctx Client context
+ * @return Pointer to the object store sorted array pointer
+ */
+sorted_array_t **lwm2mcc_objects(lwm2mcc_context_t *ctx);
+
 #endif /* LWM2MCC__LWM2M_H */

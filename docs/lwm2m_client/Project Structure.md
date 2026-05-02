@@ -7,18 +7,23 @@ lwm2mcc/
 │   └── settings.json
 ├── include/
 │   └── lwm2m/
-│       ├── lwm2m.h          # Entry point, context create/destroy
+│       ├── lwm2m.h          # Entry point, context create/destroy, getters
 │       ├── version.h         # Version macros (Vulkan-style)
-│       └── memory.h          # Pluggable allocator interface
+│       ├── memory.h          # Pluggable allocator interface
+│       └── object.h          # Object model types and registration API
 ├── src/
 │   ├── lwm2m.c              # Context implementation
 │   ├── memory.c              # Default allocator (stdlib)
+│   ├── object.c              # Object/instance registry (uses sorted_array)
+│   ├── tools/
+│   │   ├── sorted_array.h    # Generic sorted array with binary search
+│   │   └── sorted_array.c
 │   └── utils/
 │       ├── log.h             # Logging (levels, colors, timestamps)
 │       ├── log.c
 │       └── assert.h          # Assert macro with logging
 ├── examples/
-│   └── testapp.c             # Minimal create/destroy test
+│   └── testapp.c             # Device object registration demo
 └── docs/
     └── lwm2m_client/         # Obsidian vault (this)
 ```
@@ -27,20 +32,23 @@ lwm2mcc/
 
 - Public headers go in `include/lwm2m/` — this is all the user includes
 - Private headers and sources live side by side in `src/`
+- Internal tools (data structures) go in `src/tools/`
+- Internal utilities (logging, assert) go in `src/utils/`
 - Header and source share the same name (e.g. `memory.h` → `memory.c`)
 - CMake auto-discovers sources via `GLOB_RECURSE`
 
 ## What Exists Now
 
-- **lwm2m.h / lwm2m.c** — opaque `lwm2mcc_context_t`, create/destroy
+- **lwm2m.h / lwm2m.c** — opaque `lwm2mcc_context_t`, create/destroy, getters for allocator and object store
 - **version.h** — `LWM2MCC_MAKE_VERSION`, version constants, compile-time selection
 - **memory.h / memory.c** — allocator interface with convenience wrappers, stdlib defaults with assert on failure
+- **object.h / object.c** — object model types (ID typedefs, resource defs, callbacks), object/instance registration backed by sorted arrays
+- **tools/sorted_array** — generic sorted array with binary search, user-provided comparator, inline element storage
 - **utils/log** — spdlog-inspired logging with levels, ANSI colors, timestamps
 - **utils/assert** — `LWM2MCC_ASSERT(cond, msg)` that logs via FATAL and aborts
 
 ## What's Next
 
 As the project grows, new modules get added following the same pattern. Future files (not yet created):
-- Object model (`object.h`/`object.c`)
 - PAL interfaces (`transport.h`, `security.h`, `platform.h`)
 - Codec implementations (TLV, SenML)

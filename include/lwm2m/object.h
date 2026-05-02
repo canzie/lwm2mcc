@@ -132,7 +132,7 @@ typedef struct {
  * @param def Object definition (must remain valid while registered)
  * @return 0 on success, negative on error
  */
-int lwm2mcc_object_register(lwm2mcc_context_t *ctx, const lwm2mcc_object_def_t *def);
+int32_t lwm2mcc_object_register(lwm2mcc_context_t *ctx, const lwm2mcc_object_def_t *def);
 
 /**
  * @brief Unregister an object from the client context
@@ -140,7 +140,7 @@ int lwm2mcc_object_register(lwm2mcc_context_t *ctx, const lwm2mcc_object_def_t *
  * @param oid Object ID to unregister
  * @return 0 on success, negative on error
  */
-int lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
+int32_t lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
 
 /**
  * @brief Add an object instance
@@ -150,7 +150,7 @@ int lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
  * @param user_data User data passed to callbacks for this instance
  * @return 0 on success, negative on error
  */
-int lwm2mcc_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, void *user_data);
+int32_t lwm2mcc_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, void *user_data);
 
 /**
  * @brief Remove an object instance
@@ -159,6 +159,6 @@ int lwm2mcc_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid
  * @param oiid Object Instance ID
  * @return 0 on success, negative on error
  */
-int lwm2mcc_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid);
+int32_t lwm2mcc_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid);
 
 #endif /* LWM2MCC__OBJECT_H */

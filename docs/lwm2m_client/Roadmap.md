@@ -3,11 +3,11 @@
 ## Phase 1 — Foundation
 **Goal:** Project skeleton, core data model, arena allocator, versioning macros.
 
-- [ ] CMake build system
-- [ ] Version macros (`lwm2m.h`)
-- [ ] Arena allocator (`arena.h` / `arena.c`)
-- [ ] Object/instance/resource data model (`object.h` / `object.c`)
-- [ ] Object registry (register, lookup, iterate)
+- [x] CMake build system
+- [x] Version macros (`version.h`)
+- [x] Pluggable allocator (`memory.h` / `memory.c`)
+- [x] Object/instance/resource data model (`object.h` / `object.c`)
+- [x] Object registry (register, lookup, iterate) — backed by `sorted_array`
 - [ ] Built-in object definitions: Security (0), Server (1), Device (3)
 - [ ] PAL interface headers (`transport.h`, `security.h`, `platform.h`)
 

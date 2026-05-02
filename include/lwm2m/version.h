@@ -9,8 +9,7 @@
 #include <stdint.h>
 
 /* Version packing: [31:22] major, [21:12] minor, [11:0] patch */
-#define LWM2MCC_MAKE_VERSION(major, minor, patch) \
-    (((major) << 22) | ((minor) << 12) | (patch))
+#define LWM2MCC_MAKE_VERSION(major, minor, patch) (((major) << 22) | ((minor) << 12) | (patch))
 
 #define LWM2MCC_VERSION_MAJOR(v) (((uint32_t)(v) >> 22U) & 0x3FFU)
 #define LWM2MCC_VERSION_MINOR(v) (((uint32_t)(v) >> 12U) & 0x3FFU)
