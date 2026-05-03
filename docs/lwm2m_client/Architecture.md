@@ -49,13 +49,25 @@
 4. Codec encodes the value in the negotiated content format
 5. CoAP response sent back via transport PAL
 
+## Built-in Objects
+
+Security (0) and Server (1) are fully library-managed — registered internally via `lwm2mcc_register_default_objects()`. The library reads their data to drive registration and connection logic.
+
+Device (3) is auto-created with mandatory resources. The user populates values via callbacks and can add optional resources.
+
 ## Key Types
 
 ### `lwm2mcc_context_t`
 The main client context (opaque). Holds the allocator and object store. One per client instance. Access internals via `lwm2mcc_allocator()` and `lwm2mcc_objects()`.
 
 ### `lwm2mcc_object_def_t`
-Static description of an LWM2M object (e.g., Device /3). Holds oid, name, resource definitions, and read/write/execute callbacks. User-owned, must outlive the registration. Callbacks are per-object — the oiid parameter distinguishes instances.
+Static description of an LWM2M object (e.g., Device /3). Holds oid, name, resource definitions (flat const array), and read/write/execute callbacks. User-owned, must outlive the registration. Callbacks are per-object — the oiid parameter distinguishes instances.
+
+### `lwm2mcc_resource_def_t`
+Describes a single resource: rid, name, type, kind (`lwm2mcc_resource_kind_t` encodes operations + multiplicity), and mandatory flag.
+
+### `lwm2mcc_resource_kind_t`
+Enum of valid resource kinds: `R`, `W`, `RW`, `E`, `RM`, `WM`, `RWM`. Prevents invalid combinations (e.g., execute + multiple).
 
 ### `lwm2mcc_allocator_t`
 Pluggable allocator. See [[Memory Management]].

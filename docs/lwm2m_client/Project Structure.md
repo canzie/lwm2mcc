@@ -10,16 +10,18 @@ lwm2mcc/
 │       ├── lwm2m.h          # Entry point, context create/destroy, getters
 │       ├── version.h         # Version macros (Vulkan-style)
 │       ├── memory.h          # Pluggable allocator interface
-│       └── object.h          # Object model types and registration API
+│       ├── object.h          # Object model types and registration API
+│       └── utils/
+│           └── common.h      # User-facing log callback
 ├── src/
 │   ├── lwm2m.c              # Context implementation
 │   ├── memory.c              # Default allocator (stdlib)
-│   ├── object.c              # Object/instance registry (uses sorted_array)
+│   ├── object.c              # Object/instance/resource instance registry
 │   ├── tools/
 │   │   ├── sorted_array.h    # Generic sorted array with binary search
 │   │   └── sorted_array.c
 │   └── utils/
-│       ├── log.h             # Logging (levels, colors, timestamps)
+│       ├── log.h             # Internal logging (levels, colors, timestamps)
 │       ├── log.c
 │       └── assert.h          # Assert macro with logging
 ├── examples/
@@ -42,13 +44,16 @@ lwm2mcc/
 - **lwm2m.h / lwm2m.c** — opaque `lwm2mcc_context_t`, create/destroy, getters for allocator and object store
 - **version.h** — `LWM2MCC_MAKE_VERSION`, version constants, compile-time selection
 - **memory.h / memory.c** — allocator interface with convenience wrappers, stdlib defaults with assert on failure
-- **object.h / object.c** — object model types (ID typedefs, resource defs, callbacks), object/instance registration backed by sorted arrays
-- **tools/sorted_array** — generic sorted array with binary search, user-provided comparator, inline element storage
-- **utils/log** — spdlog-inspired logging with levels, ANSI colors, timestamps
+- **object.h / object.c** — object model (ID typedefs, resource defs with kind enum, callbacks), object/instance/resource-instance registry backed by sorted arrays
+- **utils/common.h** — public log callback interface (level enum + callback typedef)
+- **tools/sorted_array** — generic sorted array with binary search, user-provided comparator, inline element storage, asserts on NULL
+- **utils/log** — internal logging (levels, ANSI colors, timestamps)
 - **utils/assert** — `LWM2MCC_ASSERT(cond, msg)` that logs via FATAL and aborts
 
 ## What's Next
 
-As the project grows, new modules get added following the same pattern. Future files (not yet created):
+- Error reporting strategy (want errno-like with source info, TBD)
+- Built-in objects: Security (0), Server (1) fully internal; Device (3) auto-created with required resources
 - PAL interfaces (`transport.h`, `security.h`, `platform.h`)
+- Event loop (`lwm2mcc_step()`)
 - Codec implementations (TLV, SenML)

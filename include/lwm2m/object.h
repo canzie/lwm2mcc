@@ -6,11 +6,11 @@
 #ifndef LWM2MCC__OBJECT_H
 #define LWM2MCC__OBJECT_H
 
+#include "lwm2m/version.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include "lwm2m/version.h"
 
 /** @brief Object ID */
 typedef uint16_t lwm2mcc_oid_t;
@@ -43,13 +43,28 @@ typedef enum {
 #endif
 } lwm2mcc_resource_type_t;
 
-/** @brief Resource operation flags (bitmask) */
+/** @brief Whether a resource is mandatory per the spec */
 typedef enum {
-    LWM2MCC_OP_NONE = 0,
-    LWM2MCC_OP_READ = (1 << 0),
-    LWM2MCC_OP_WRITE = (1 << 1),
-    LWM2MCC_OP_EXECUTE = (1 << 2),
-} lwm2mcc_resource_op_t;
+    LWM2MCC_RES_OPTIONAL,
+    LWM2MCC_RES_MANDATORY,
+} lwm2mcc_mandatory_t;
+
+/** @brief Whether a resource is currently present or absent */
+typedef enum {
+    LWM2MCC_RES_ABSENT,
+    LWM2MCC_RES_PRESENT,
+} lwm2mcc_presence_t;
+
+/** @brief Resource kind (encodes operations and multiplicity) */
+typedef enum {
+    LWM2MCC_RES_R,
+    LWM2MCC_RES_W,
+    LWM2MCC_RES_RW,
+    LWM2MCC_RES_E,
+    LWM2MCC_RES_RM,
+    LWM2MCC_RES_WM,
+    LWM2MCC_RES_RWM,
+} lwm2mcc_resource_kind_t;
 
 /**
  * @brief Static resource definition
@@ -61,9 +76,9 @@ typedef struct {
     lwm2mcc_rid_t rid;
     const char *name;
     lwm2mcc_resource_type_t type;
-    uint8_t operations;
-    bool multiple;
-    bool mandatory;
+    lwm2mcc_resource_kind_t kind;
+    lwm2mcc_mandatory_t mandatory;
+    lwm2mcc_presence_t presence;
 } lwm2mcc_resource_def_t;
 
 typedef struct lwm2mcc_context lwm2mcc_context_t;
@@ -130,17 +145,15 @@ typedef struct {
  * @brief Register an object definition with the client context
  * @param ctx Client context
  * @param def Object definition (must remain valid while registered)
- * @return 0 on success, negative on error
  */
-int32_t lwm2mcc_object_register(lwm2mcc_context_t *ctx, const lwm2mcc_object_def_t *def);
+void lwm2mcc_object_register(lwm2mcc_context_t *ctx, const lwm2mcc_object_def_t *def);
 
 /**
  * @brief Unregister an object from the client context
  * @param ctx Client context
  * @param oid Object ID to unregister
- * @return 0 on success, negative on error
  */
-int32_t lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
+void lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
 
 /**
  * @brief Add an object instance
@@ -148,17 +161,37 @@ int32_t lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
  * @param oid Object ID
  * @param oiid Object Instance ID
  * @param user_data User data passed to callbacks for this instance
- * @return 0 on success, negative on error
  */
-int32_t lwm2mcc_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, void *user_data);
+void lwm2mcc_object_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, void *user_data);
 
 /**
  * @brief Remove an object instance
  * @param ctx Client context
  * @param oid Object ID
  * @param oiid Object Instance ID
- * @return 0 on success, negative on error
  */
-int32_t lwm2mcc_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid);
+void lwm2mcc_object_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid);
+
+/**
+ * @brief Add a resource instance to a multi-instance resource
+ * @param ctx Client context
+ * @param oid Object ID
+ * @param oiid Object Instance ID
+ * @param rid Resource ID (must be defined with multiple = true)
+ * @param riid Resource Instance ID
+ */
+void lwm2mcc_resource_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, lwm2mcc_rid_t rid,
+                                   lwm2mcc_riid_t riid);
+
+/**
+ * @brief Remove a resource instance from a multi-instance resource
+ * @param ctx Client context
+ * @param oid Object ID
+ * @param oiid Object Instance ID
+ * @param rid Resource ID
+ * @param riid Resource Instance ID
+ */
+void lwm2mcc_resource_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, lwm2mcc_rid_t rid,
+                                      lwm2mcc_riid_t riid);
 
 #endif /* LWM2MCC__OBJECT_H */

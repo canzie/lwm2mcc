@@ -8,6 +8,10 @@
 - [x] Pluggable allocator (`memory.h` / `memory.c`)
 - [x] Object/instance/resource data model (`object.h` / `object.c`)
 - [x] Object registry (register, lookup, iterate) — backed by `sorted_array`
+- [x] Resource instance management (add/remove riids per object instance)
+- [x] Resource kind enum (encodes operations + multiplicity, prevents invalid combos)
+- [x] Log callback interface (`utils/common.h`)
+- [ ] Error reporting strategy (TBD — want errno-like + source info)
 - [ ] Built-in object definitions: Security (0), Server (1), Device (3)
 - [ ] PAL interface headers (`transport.h`, `security.h`, `platform.h`)
 

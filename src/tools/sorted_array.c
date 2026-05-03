@@ -5,6 +5,8 @@
 
 #include "sorted_array.h"
 
+#include "../utils/assert.h"
+
 #include <string.h>
 
 #define INITIAL_CAPACITY 4
@@ -104,6 +106,7 @@ void sorted_array_destroy(sorted_array_t *arr)
 
 bool sorted_array_insert(sorted_array_t *arr, const void *elem)
 {
+    LWM2MCC_ASSERT(arr != NULL, "");
     uint32_t pos;
     if (s_binary_search(arr, elem, &pos)) {
         return false;
@@ -122,6 +125,7 @@ bool sorted_array_insert(sorted_array_t *arr, const void *elem)
 
 bool sorted_array_remove(sorted_array_t *arr, const void *elem)
 {
+    LWM2MCC_ASSERT(arr != NULL, "");
     uint32_t pos;
     if (!s_binary_search(arr, elem, &pos)) {
         return false;
@@ -138,6 +142,7 @@ bool sorted_array_remove(sorted_array_t *arr, const void *elem)
 
 uint32_t sorted_array_search(const sorted_array_t *arr, const void *elem)
 {
+    LWM2MCC_ASSERT(arr != NULL, "");
     uint32_t pos;
     if (!s_binary_search(arr, elem, &pos)) {
         return SORTED_ARRAY_INVALID_INDEX;
@@ -152,6 +157,7 @@ uint32_t sorted_array_count(const sorted_array_t *arr)
 
 void *sorted_array_at(const sorted_array_t *arr, uint32_t index)
 {
+    LWM2MCC_ASSERT(arr != NULL, "");
     if (index >= arr->count) {
         return NULL;
     }

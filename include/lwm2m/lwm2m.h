@@ -41,4 +41,10 @@ typedef struct sorted_array sorted_array_t;
  */
 sorted_array_t **lwm2mcc_objects(lwm2mcc_context_t *ctx);
 
+/**
+ * @brief Register the mandatory built-in objects (Security, Server, Device)
+ * @param ctx Client context
+ */
+void lwm2mcc_register_builtin_objects(lwm2mcc_context_t *ctx);
+
 #endif /* LWM2MCC__LWM2M_H */
