@@ -13,44 +13,37 @@
 - [x] Log callback interface (`utils/common.h`)
 - [x] Error reporting strategy (Vulkan-style `lwm2mcc_result_t` for public API calls)
 - [x] Built-in object definitions: Security (0), Server (1), Device (3) — baseline definitions and registration flow in place
-- [ ] PAL interface headers (`transport.h`, `security.h`, `platform.h`)
-
-### PAL Header Plan
-
-`include/lwm2m/transport.h`
-- Purpose: network and CoAP transport abstraction used by the core state machine.
-- Minimum types: endpoint/address type, opaque transport handle/config, transport result enum mapping to `lwm2mcc_result_t`.
-- Minimum operations: open/init, send, receive/poll, close.
-- Constraints: transport API must not expose libcoap-specific types in public headers.
-
-`include/lwm2m/security.h`
-- Purpose: DTLS/TLS session abstraction independent of backend implementation.
-- Minimum types: security mode enum (PSK, RPK, X.509), credential container, opaque security handle.
-- Minimum operations: session setup, credential binding, shutdown.
-- Constraints: no mbedTLS/OpenSSL types in public headers.
-
-`include/lwm2m/platform.h`
-- Purpose: platform services needed by core logic.
-- Minimum operations: monotonic time (`now_ms`), optional random bytes, optional platform logging bridge.
-- Constraints: avoid POSIX-only types in public API.
-
-Acceptance criteria for Phase 1 completion of this item:
-- The three headers compile as part of the public include set.
-- Public APIs are backend-agnostic and contain no third-party transport/security types.
-- At least one documented reference mapping in docs (Linux + libcoap + mbedTLS) explains how implementations bind to these interfaces.
+- [x] PAL interface headers (`transport.h`, `security.h`, `platform.h`)
 
 **Deliverable:** A library that compiles, has an object tree you can populate and read, but doesn't talk to anything yet.
 
-## Phase 2 — CoAP + Registration
-**Goal:** Talk to an LWM2M server. Register, update, deregister.
+## Phase 2 — CoAP + Bootstrap + Registration
+**Goal:** Connect to a Bootstrap-Server to receive credentials, then register with an LWM2M server.
 
-- [ ] `lwm2m_coap_message_t` struct and helpers
-- [ ] Linux/libcoap transport PAL implementation
+Bootstrap comes first because client-initiated bootstrap is the primary provisioning path:
+the device ships knowing only a Bootstrap-Server URI, so registration cannot happen until
+the Bootstrap-Server has written the LWM2M server credentials into Security/Server objects.
+
+- [x] `lwm2mcc_coap_message_t` struct and helpers (`include/lwm2m/coap.h`)
+- [x] Linux/libcoap transport PAL implementation (`src/platform/transport_libcoap.c`)
+- [x] `lwm2mcc_step()` event loop integration (timers + transport recv stub)
+- [x] Timer subsystem (`src/tools/timers.c`) — min-heap backed, opaque, max-timeout-capped step
+- [ ] Link-Format serialiser (object/instance list for `POST /rd` payload)
 - [ ] Registration state machine (Register, Update, Deregister)
-- [ ] `lwm2m_step()` event loop integration
+  - `POST /rd` with Link-Format payload
+  - Handle `2.01 Created` + Location-Path
+  - Schedule lifetime update `POST`s via timer
+  - Deregister on stop
+- [ ] Message dispatcher in `lwm2mcc_step` (route received CoAP messages to state machines)
+- [ ] Unit tests (fff + CUnit) — timer subsystem, sorted array, min-heap, registration state machine
+- [ ] Client-initiated bootstrap state machine
+  - Detect bootstrap-server Security instance (resource 1 = true)
+  - `POST /bs` on the Bootstrap-Server
+  - Handle Bootstrap-Write and Bootstrap-Delete
+  - Bootstrap-Finish → transition to registration
 - [ ] Test against Leshan (Eclipse LWM2M server)
 
-**Deliverable:** A client that registers with Leshan and stays registered.
+**Deliverable:** A client that bootstraps from Leshan's Bootstrap-Server, registers with Leshan, and stays registered.
 
 ## Phase 3 — Device Management
 **Goal:** Server can Read, Write, Execute, Create, Delete resources.
@@ -85,8 +78,6 @@ Acceptance criteria for Phase 1 completion of this item:
 - [ ] Linux/mbedTLS security PAL implementation
 - [ ] PSK (Pre-Shared Key) mode
 - [ ] Certificate mode (Raw Public Key + X.509)
-- [ ] Bootstrap interface
-- [ ] Security credential provisioning
 
 **Deliverable:** Encrypted communication with a server.
 
@@ -96,7 +87,6 @@ Acceptance criteria for Phase 1 completion of this item:
 - [ ] Queue mode (sleeping clients)
 - [ ] Block-wise transfer (large payloads)
 - [ ] Firmware Update object (obj 5)
-- [ ] Unit tests (fff + CUnit)
 - [ ] CI pipeline
 - [ ] Doxygen-generated API reference
 - [ ] Example applications

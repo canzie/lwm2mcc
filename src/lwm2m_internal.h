@@ -7,9 +7,12 @@
 #define LWM2MCC__LWM2M_INTERNAL_H
 
 #include "lwm2m/lwm2m.h"
+#include "tools/timers.h"
 
 const lwm2mcc_allocator_t *_lwm2mcc_allocator(const lwm2mcc_context_t *ctx);
+lwm2mcc_transport_ops_t *_lwm2mcc_transport(lwm2mcc_context_t *ctx);
 sorted_array_t **_lwm2mcc_objects(lwm2mcc_context_t *ctx);
 sorted_array_t *_lwm2mcc_registered_objects(const lwm2mcc_context_t *ctx);
+lwm2mcc_timers_t *_lwm2mcc_timers(lwm2mcc_context_t *ctx);
 
 #endif /* LWM2MCC__LWM2M_INTERNAL_H */

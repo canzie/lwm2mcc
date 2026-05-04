@@ -82,13 +82,16 @@ Enum of valid resource kinds: `R`, `W`, `RW`, `E`, `RM`, `WM`, `RWM`. Prevents i
 ### `lwm2mcc_allocator_t`
 Pluggable allocator. See [[Memory Management]].
 
+### `lwm2mcc_timers_t`
+Internal timer subsystem (opaque). Owned by the context; created in `lwm2mcc_create`, destroyed in `lwm2mcc_destroy`. Backed by a min-heap so the next-to-fire timer is always O(1). Internal modules create timers via `lwm2mcc_timer_create` and schedule them with `lwm2mcc_timer_start`. `lwm2mcc_timers_step` fires all expired timers and returns the sleep budget for the event loop.
+
 ## Threading Model
-The library is single-threaded. The user drives it by calling `lwm2m_step()` in a loop (or from a select/poll/epoll event loop). The library never creates threads.
+The library is single-threaded. The user drives it by calling `lwm2mcc_step()` in a loop (or from a select/poll/epoll event loop). The library never creates threads.
 
 ```c
 while (running) {
-    struct timeval timeout;
-    lwm2m_step(ctx, &timeout);
-    // select/poll on transport fd with timeout
+    uint32_t timeout_ms;
+    lwm2mcc_step(ctx, max_wait_ms, &timeout_ms);
+    // poll on transport fd with timeout_ms
 }
 ```

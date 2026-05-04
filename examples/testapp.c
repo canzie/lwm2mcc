@@ -9,11 +9,28 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+
+static uint64_t s_now_ms(void *ctx)
+{
+    (void)ctx;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000u + (uint64_t)ts.tv_nsec / 1000000u;
+}
 
 int main(void)
 {
+    lwm2mcc_platform_ops_t platform = {
+        .now_ms = s_now_ms,
+    };
+
+    lwm2mcc_config_t config = {
+        .platform = &platform,
+    };
+
     lwm2mcc_context_t *ctx = NULL;
-    lwm2mcc_result_t res = lwm2mcc_create(NULL, &ctx);
+    lwm2mcc_result_t res = lwm2mcc_create(&config, &ctx);
     if (res != LWM2MCC_SUCCESS) {
         fprintf(stderr, "Failed to create context: %d\n", res);
         return 1;

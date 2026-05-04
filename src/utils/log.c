@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <time.h>
 
-static lwm2mcc_log_level_t s_min_level = LWM2MCC_LOG_TRACE;
+static lwm2mcc_log_level_t s_min_level = LWM2MCC_LOG_LEVEL_TRACE;
 static int s_color_enabled = 1;
 
 static const char *s_level_names[] = {
@@ -63,7 +63,7 @@ void lwm2mcc_log_write(lwm2mcc_log_level_t level, const char *file, int line, co
 
     fprintf(stderr, "\n");
 
-    if (level > LWM2MCC_LOG_TRACE) {
+    if (level > LWM2MCC_LOG_LEVEL_TRACE) {
         fflush(stderr);
     }
 }

@@ -13,6 +13,7 @@ list(GET LWM2M_VERSION_PARTS 1 LWM2M_VER_MINOR)
 
 file(GLOB_RECURSE LWM2MCC_SOURCES src/*.c)
 file(GLOB_RECURSE LWM2MCC_HEADERS include/*.h)
+list(FILTER LWM2MCC_SOURCES EXCLUDE REGEX "src/platform/.*")
 
 add_library(lwm2mcc SHARED ${LWM2MCC_SOURCES})
 
@@ -28,3 +29,28 @@ target_compile_options(lwm2mcc PRIVATE
 
 add_executable(testapp examples/testapp.c)
 target_link_libraries(testapp PRIVATE lwm2mcc)
+
+set(LWM2MCC_TRANSPORT "none" CACHE STRING "Transport backend (none, libcoap)")
+set_property(CACHE LWM2MCC_TRANSPORT PROPERTY STRINGS none libcoap)
+
+if(LWM2MCC_TRANSPORT STREQUAL "libcoap")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LIBCOAP REQUIRED libcoap-3)
+
+    add_library(lwm2mcc_transport_libcoap STATIC
+        src/platform/transport_libcoap.c
+    )
+    target_include_directories(lwm2mcc_transport_libcoap
+        PUBLIC  include src/platform
+        PRIVATE ${LIBCOAP_INCLUDE_DIRS}
+    )
+    target_link_libraries(lwm2mcc_transport_libcoap
+        PUBLIC  lwm2mcc
+        PRIVATE ${LIBCOAP_LIBRARIES}
+    )
+    target_compile_options(lwm2mcc_transport_libcoap PRIVATE
+        -Wall -Wextra -Wpedantic -Werror
+        ${LIBCOAP_CFLAGS_OTHER}
+    )
+    target_link_libraries(testapp PRIVATE lwm2mcc_transport_libcoap)
+endif()
