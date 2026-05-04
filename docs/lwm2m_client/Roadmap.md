@@ -11,9 +11,33 @@
 - [x] Resource instance management (add/remove riids per object instance)
 - [x] Resource kind enum (encodes operations + multiplicity, prevents invalid combos)
 - [x] Log callback interface (`utils/common.h`)
-- [ ] Error reporting strategy (TBD — want errno-like + source info)
-- [ ] Built-in object definitions: Security (0), Server (1), Device (3)
+- [x] Error reporting strategy (Vulkan-style `lwm2mcc_result_t` for public API calls)
+- [x] Built-in object definitions: Security (0), Server (1), Device (3) — baseline definitions and registration flow in place
 - [ ] PAL interface headers (`transport.h`, `security.h`, `platform.h`)
+
+### PAL Header Plan
+
+`include/lwm2m/transport.h`
+- Purpose: network and CoAP transport abstraction used by the core state machine.
+- Minimum types: endpoint/address type, opaque transport handle/config, transport result enum mapping to `lwm2mcc_result_t`.
+- Minimum operations: open/init, send, receive/poll, close.
+- Constraints: transport API must not expose libcoap-specific types in public headers.
+
+`include/lwm2m/security.h`
+- Purpose: DTLS/TLS session abstraction independent of backend implementation.
+- Minimum types: security mode enum (PSK, RPK, X.509), credential container, opaque security handle.
+- Minimum operations: session setup, credential binding, shutdown.
+- Constraints: no mbedTLS/OpenSSL types in public headers.
+
+`include/lwm2m/platform.h`
+- Purpose: platform services needed by core logic.
+- Minimum operations: monotonic time (`now_ms`), optional random bytes, optional platform logging bridge.
+- Constraints: avoid POSIX-only types in public API.
+
+Acceptance criteria for Phase 1 completion of this item:
+- The three headers compile as part of the public include set.
+- Public APIs are backend-agnostic and contain no third-party transport/security types.
+- At least one documented reference mapping in docs (Linux + libcoap + mbedTLS) explains how implementations bind to these interfaces.
 
 **Deliverable:** A library that compiles, has an object tree you can populate and read, but doesn't talk to anything yet.
 

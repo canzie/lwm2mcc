@@ -6,6 +6,7 @@
 #ifndef LWM2MCC__OBJECT_H
 #define LWM2MCC__OBJECT_H
 
+#include "lwm2m/utils/common.h"
 #include "lwm2m/version.h"
 
 #include <stdbool.h>
@@ -145,15 +146,19 @@ typedef struct {
  * @brief Register an object definition with the client context
  * @param ctx Client context
  * @param def Object definition (must remain valid while registered)
+ * @return LWM2MCC_SUCCESS on success
+ * @return LWM2MCC_ERR_NOT_FOUND if object registration fails
  */
-void lwm2mcc_object_register(lwm2mcc_context_t *ctx, const lwm2mcc_object_def_t *def);
+lwm2mcc_result_t lwm2mcc_object_register(lwm2mcc_context_t *ctx, const lwm2mcc_object_def_t *def);
 
 /**
  * @brief Unregister an object from the client context
  * @param ctx Client context
  * @param oid Object ID to unregister
+ * @return LWM2MCC_SUCCESS on success
+ * @return LWM2MCC_ERR_NOT_FOUND if object is not registered
  */
-void lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
+lwm2mcc_result_t lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
 
 /**
  * @brief Add an object instance
@@ -161,16 +166,20 @@ void lwm2mcc_object_unregister(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid);
  * @param oid Object ID
  * @param oiid Object Instance ID
  * @param user_data User data passed to callbacks for this instance
+ * @return LWM2MCC_SUCCESS on success
+ * @return LWM2MCC_ERR_NOT_FOUND if object is not registered
  */
-void lwm2mcc_object_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, void *user_data);
+lwm2mcc_result_t lwm2mcc_object_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, void *user_data);
 
 /**
  * @brief Remove an object instance
  * @param ctx Client context
  * @param oid Object ID
  * @param oiid Object Instance ID
+ * @return LWM2MCC_SUCCESS on success
+ * @return LWM2MCC_ERR_NOT_FOUND if object or instance is not found
  */
-void lwm2mcc_object_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid);
+lwm2mcc_result_t lwm2mcc_object_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid);
 
 /**
  * @brief Add a resource instance to a multi-instance resource
@@ -179,9 +188,11 @@ void lwm2mcc_object_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, l
  * @param oiid Object Instance ID
  * @param rid Resource ID (must be defined with multiple = true)
  * @param riid Resource Instance ID
+ * @return LWM2MCC_SUCCESS on success
+ * @return LWM2MCC_ERR_NOT_FOUND if object or instance is not found
  */
-void lwm2mcc_resource_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, lwm2mcc_rid_t rid,
-                                   lwm2mcc_riid_t riid);
+lwm2mcc_result_t lwm2mcc_resource_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, lwm2mcc_rid_t rid,
+                                               lwm2mcc_riid_t riid);
 
 /**
  * @brief Remove a resource instance from a multi-instance resource
@@ -190,8 +201,10 @@ void lwm2mcc_resource_instance_add(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lw
  * @param oiid Object Instance ID
  * @param rid Resource ID
  * @param riid Resource Instance ID
+ * @return LWM2MCC_SUCCESS on success
+ * @return LWM2MCC_ERR_NOT_FOUND if resource instance is not found
  */
-void lwm2mcc_resource_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, lwm2mcc_rid_t rid,
-                                      lwm2mcc_riid_t riid);
+lwm2mcc_result_t lwm2mcc_resource_instance_remove(lwm2mcc_context_t *ctx, lwm2mcc_oid_t oid, lwm2mcc_oiid_t oiid, lwm2mcc_rid_t rid,
+                                                  lwm2mcc_riid_t riid);
 
 #endif /* LWM2MCC__OBJECT_H */

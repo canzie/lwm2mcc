@@ -12,12 +12,22 @@
 
 int main(void)
 {
-    lwm2mcc_context_t *ctx = lwm2mcc_create(NULL);
+    lwm2mcc_context_t *ctx = NULL;
+    lwm2mcc_result_t res = lwm2mcc_create(NULL, &ctx);
+    if (res != LWM2MCC_SUCCESS) {
+        fprintf(stderr, "Failed to create context: %d\n", res);
+        return 1;
+    }
 
     printf("lwm2mcc context created (version %u.%u)\n", LWM2MCC_VERSION_MAJOR(LWM2MCC_VERSION),
            LWM2MCC_VERSION_MINOR(LWM2MCC_VERSION));
 
-    lwm2mcc_register_builtin_objects(ctx);
+    res = lwm2mcc_register_builtin_objects(ctx);
+    if (res != LWM2MCC_SUCCESS) {
+        fprintf(stderr, "Failed to register builtin objects: %d\n", res);
+        lwm2mcc_destroy(ctx);
+        return 1;
+    }
     printf("Registered builtin objects\n");
 
     lwm2mcc_resource_def_t device_resources[LWM2MCC_DEVICE_RESOURCE_COUNT];
@@ -34,15 +44,37 @@ int main(void)
         .resource_count = LWM2MCC_DEVICE_RESOURCE_COUNT,
     };
 
-    lwm2mcc_object_register(ctx, &device_def);
+    res = lwm2mcc_object_register(ctx, &device_def);
+    if (res != LWM2MCC_SUCCESS) {
+        fprintf(stderr, "Failed to register object: %d\n", res);
+        lwm2mcc_destroy(ctx);
+        return 1;
+    }
     printf("Registered object /%u (%s)\n", device_def.oid, device_def.name);
 
-    lwm2mcc_object_instance_add(ctx, LWM2MCC_OID_DEVICE, 0, NULL);
+    res = lwm2mcc_object_instance_add(ctx, LWM2MCC_OID_DEVICE, 0, NULL);
+    if (res != LWM2MCC_SUCCESS) {
+        fprintf(stderr, "Failed to add instance: %d\n", res);
+        lwm2mcc_destroy(ctx);
+        return 1;
+    }
     printf("Added instance /3/0\n");
 
-    lwm2mcc_object_instance_remove(ctx, LWM2MCC_OID_DEVICE, 0);
-    lwm2mcc_object_unregister(ctx, LWM2MCC_OID_DEVICE);
-    lwm2mcc_destroy(ctx);
+    res = lwm2mcc_object_instance_remove(ctx, LWM2MCC_OID_DEVICE, 0);
+    if (res != LWM2MCC_SUCCESS) {
+        fprintf(stderr, "Failed to remove instance: %d\n", res);
+    }
+
+    res = lwm2mcc_object_unregister(ctx, LWM2MCC_OID_DEVICE);
+    if (res != LWM2MCC_SUCCESS) {
+        fprintf(stderr, "Failed to unregister object: %d\n", res);
+    }
+
+    res = lwm2mcc_destroy(ctx);
+    if (res != LWM2MCC_SUCCESS) {
+        fprintf(stderr, "Failed to destroy context: %d\n", res);
+        return 1;
+    }
     printf("Cleanup complete\n");
 
     return 0;

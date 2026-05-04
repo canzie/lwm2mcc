@@ -58,7 +58,17 @@ Device (3) is auto-created with mandatory resources. The user populates values v
 ## Key Types
 
 ### `lwm2mcc_context_t`
-The main client context (opaque). Holds the allocator and object store. One per client instance. Access internals via `lwm2mcc_allocator()` and `lwm2mcc_objects()`.
+The main client context (opaque). Holds the allocator and registered objects. One per client instance. Public code uses `lwm2mcc_allocator()` and `lwm2mcc_registered_objects()`, while internal code uses the private helpers in `lwm2m_internal.h`.
+
+## Error Handling Strategy
+
+Public API calls return `lwm2mcc_result_t` (Vulkan-style result enum), and any data outputs are returned through explicit output parameters.
+
+Current intent by layer:
+- Public API: always `lwm2mcc_result_t` return, with out-parameters for produced values.
+- Internal/private helpers: direct pointers/values are allowed where appropriate, without forcing result-style wrapping.
+
+This keeps the public surface consistent while letting internal code stay simple and efficient.
 
 ### `lwm2mcc_object_def_t`
 Static description of an LWM2M object (e.g., Device /3). Holds oid, name, resource definitions (flat const array), and read/write/execute callbacks. User-owned, must outlive the registration. Callbacks are per-object — the oiid parameter distinguishes instances.

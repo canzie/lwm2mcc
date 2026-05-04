@@ -41,7 +41,7 @@ lwm2mcc/
 
 ## What Exists Now
 
-- **lwm2m.h / lwm2m.c** — opaque `lwm2mcc_context_t`, create/destroy, getters for allocator and object store
+- **lwm2m.h / lwm2m.c** — opaque `lwm2mcc_context_t`, create/destroy, getters for allocator and registered objects
 - **version.h** — `LWM2MCC_MAKE_VERSION`, version constants, compile-time selection
 - **memory.h / memory.c** — allocator interface with convenience wrappers, stdlib defaults with assert on failure
 - **object.h / object.c** — object model (ID typedefs, resource defs with kind enum, callbacks), object/instance/resource-instance registry backed by sorted arrays
@@ -52,8 +52,8 @@ lwm2mcc/
 
 ## What's Next
 
-- Error reporting strategy (want errno-like with source info, TBD)
-- Built-in objects: Security (0), Server (1) fully internal; Device (3) auto-created with required resources
+- Extend error handling docs with per-function return-code guarantees and examples
+- Built-in objects follow-up: tighten Device (3) defaults/auto-create policy and complete coverage tests
 - PAL interfaces (`transport.h`, `security.h`, `platform.h`)
 - Event loop (`lwm2mcc_step()`)
 - Codec implementations (TLV, SenML)

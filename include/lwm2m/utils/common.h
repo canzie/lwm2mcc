@@ -16,6 +16,14 @@ typedef enum {
     LWM2MCC_LOG_FATAL,
 } lwm2mcc_log_level_t;
 
+typedef enum {
+    LWM2MCC_SUCCESS = 0,
+    LWM2MCC_TIMEOUT,
+    LWM2MCC_ERR_OUT_OF_BOUNDS,
+    LWM2MCC_ERR_NULL_POINTER,
+    LWM2MCC_ERR_NOT_FOUND,
+} lwm2mcc_result_t;
+
 /**
  * @brief Log callback function
  * @param level Log level
